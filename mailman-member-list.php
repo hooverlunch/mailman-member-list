@@ -35,8 +35,7 @@
 
   // Returns an array of form [['list1-name', 'List 1 description'], ['list2-name', 'List 2 description']]
   function get_lists() {
-    //exec(MAILMAN_BIN_PATH . '/list_lists', $lists);
-    $lists = array("Junk", "   foo - Some foo stuff", "  bar - Bar Stuff  ");
+    exec(MAILMAN_BIN_PATH . '/list_lists', $lists);
 
     // First line is intro text.
     $lists = array_slice($lists, 1);
@@ -55,10 +54,7 @@
   // Returns an array of form [['email1@example.com', 'Jane Doe'], ['email2@example.com', 'John Doe'], ['email2@example.com']]
   // Note that second element of sub array, person name, may not be present.
   function get_members($list_name) {
-    //exec(MAILMAN_BIN_PATH . "/list_members -f $list_name", $members);
-    $members = array("Matt Cooke <mcooke.mail@gmail.com>","Sonia Kraftson <soniakraftson@yahoo.com>",
-      "Tom Smyth <tomsmyth@gmail.com>","unit29@touchstonecohousing.org");
-
+    exec(MAILMAN_BIN_PATH . "/list_members -f $list_name", $members);
     return array_map('parse_member_name_email', $members);
   }
 
