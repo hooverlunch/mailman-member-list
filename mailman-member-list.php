@@ -25,13 +25,15 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-define('MAILMAN_BIN_PATH', '/home/tsmailman/mailman/bin');
+require_once(WP_PLUGIN_DIR . '/mailman-member-list/settings-page.php');
 
+define('MAILMAN_BIN_PATH', '/home/tsmailman/mailman/bin');
 
 class MailmanMemberList {
 
   static function init() {
-    add_shortcode('mailman-members', array(__CLASS__, 'get_all_members'));
+    add_shortcode( 'mailman-members', array( __CLASS__, 'get_all_members' ) );
+    if( is_admin() ) new MailmanMemberListSettingsPage();
   }
 
   // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
@@ -75,7 +77,7 @@ HTML;
     }
 
     $html[] = '</div>';
-    return implode("\n", $html);
+    echo implode("\n", $html);
   }
 
   // Given string of form '   list-name - List description', returns array of form ['list-name', 'List Description']
