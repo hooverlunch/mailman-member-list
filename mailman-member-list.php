@@ -33,6 +33,7 @@ class MailmanMemberList {
     add_shortcode( 'mailman-members', array( $this, 'get_all_members' ) );
     if( is_admin() ) new MailmanMemberListSettingsPage();
     $this->options = get_option( 'mml_options' );
+    $this->ignore_lists = array('mailman'); // Ignore the default 'mailman' list.
   }
 
   // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
@@ -43,6 +44,8 @@ class MailmanMemberList {
     $html[] = '<div id="mailman-lists">';
 
     foreach($lists as $list) {
+      // Skip ignored lists.
+      if (in_array($list[0], $this->ignore_lists)) continue;
 
       $html[] = <<<HTML
   <div class="mailman-list">
