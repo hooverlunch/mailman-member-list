@@ -25,26 +25,77 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-  define('MAILMAN_BIN_PATH', '/home/tsmailman/mailman/bin');
+define('MAILMAN_BIN_PATH', '/home/tsmailman/mailman/bin');
+
+
+class MailmanMemberList {
+
+  static function init() {
+    add_shortcode('mailman-members', array(__CLASS__, 'get_all_members'));
+  }
+
+  // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
+  static function get_all_members() {
+    $lists = self::get_lists();
+    $html = array();
+
+    $html[] = '<div id="mailman-lists">';
+
+    foreach($lists as $list) {
+
+      $html[] = <<<HTML
+  <div class="list">
+    <div class="list-name">{$list[0]}</div>
+    <div class="list-description">{$list[1]}</div>
+    <ul>
+HTML;
+
+      $members = self::get_members($list[0]);
+
+      foreach($members as $member) {
+
+        $html[] = '<li>';
+
+        if (count($member) == 1) {
+          $html[] = <<<HTML
+      <div class="member-name no-name"></div>
+HTML;
+        } else {
+          $html[] = <<<HTML
+      <div class="member-name">{$member[1]}</div>
+HTML;
+        }
+
+        $html[] = <<<HTML
+      <div class="member-email">{$member[0]}</div>
+    </li>
+HTML;
+      }
+      $html[] = '</ul></div>';
+    }
+
+    $html[] = '</div>';
+    return implode("\n", $html);
+  }
 
   // Given string of form '   list-name - List description', returns array of form ['list-name', 'List Description']
-  function parse_list_name_description($str) {
+  static function parse_list_name_description($str) {
     preg_match('/^\\s+([^\\s]+)\\s+-\\s+(.+?)\\s*$/', $str, $matches);
     return array_slice($matches, 1);
   }
 
   // Returns an array of form [['list1-name', 'List 1 description'], ['list2-name', 'List 2 description']]
-  function get_lists() {
+  private static function get_lists() {
     exec(MAILMAN_BIN_PATH . '/list_lists', $lists);
 
     // First line is intro text.
     $lists = array_slice($lists, 1);
 
-    return array_map('parse_list_name_description', $lists);
+    return array_map(array(__CLASS__, 'parse_list_name_description'), $lists);
   }
 
   // Returns an array of form ['email1@example.com', 'Jane Doe'], or ['email1@example.com'] if no name present.
-  function parse_member_name_email($str) {
+  private static function parse_member_name_email($str) {
     if (preg_match('/^(.+?)\s+<(.+)>$/', $str, $matches) === 1)
       return array($matches[2], $matches[1]);
     else
@@ -53,41 +104,11 @@
 
   // Returns an array of form [['email1@example.com', 'Jane Doe'], ['email2@example.com', 'John Doe'], ['email2@example.com']]
   // Note that second element of sub array, person name, may not be present.
-  function get_members($list_name) {
+  private static function get_members($list_name) {
     exec(MAILMAN_BIN_PATH . "/list_members -f $list_name", $members);
-    return array_map('parse_member_name_email', $members);
+    return array_map(array(__CLASS__, 'parse_member_name_email'), $members);
   }
+}
 
-  // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
-  function get_all_members() {
-    $lists = get_lists(); ?>
-
-    <div id="mailman-lists">
-
-<?php foreach($lists as $list) { ?>
-      <div class="list">
-        <div class="list-name"><?php echo $list[0] ?></div>
-        <div class="list-description"><?php echo $list[1] ?></div>
-        <ul>
-  <?php $members = get_members($list[0]);
-        foreach($members as $member) { ?>
-          <li>
-            <?php if (count($member) == 1) { ?>
-              <div class="member-name no-name"></div>
-            <?php } else { ?>
-              <div class="member-name"><?php echo $member[1]; ?></div>
-            <?php } ?>
-            <div class="member-email"><?php echo $member[0]; ?></div>
-          </li>
-  <?php } ?>
-        </ul>
-      </div>
-<?php } ?>
-
-    </div>
-
-<?php
-  }
-
-  add_shortcode( 'mailman-members', 'get_all_members' );
+MailmanMemberList::init();
 ?>
