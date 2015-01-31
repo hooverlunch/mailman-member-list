@@ -45,7 +45,7 @@ class MailmanMemberList {
     foreach($lists as $list) {
 
       $html[] = <<<HTML
-  <div class="list">
+  <div class="mailman-list">
     <div class="list-name">{$list[0]}</div>
     <div class="list-description">{$list[1]}</div>
     <ul>

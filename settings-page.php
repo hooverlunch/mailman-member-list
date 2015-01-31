@@ -103,7 +103,7 @@ class MailmanMemberListSettingsPage
   public function bin_path_callback()
   {
     printf(
-      '<input type="text" id="bin_path" name="mml_options[bin_path]" value="%s" style="width: 300px"/>',
+      '<input type="text" id="bin_path" name="mml_options[bin_path]" value="%s" style="width: 500px"/>',
       isset( $this->options['bin_path'] ) ? esc_attr( $this->options['bin_path']) : ''
     );
   }
