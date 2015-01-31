@@ -27,18 +27,17 @@
 
 require_once(WP_PLUGIN_DIR . '/mailman-member-list/settings-page.php');
 
-define('MAILMAN_BIN_PATH', '/home/tsmailman/mailman/bin');
-
 class MailmanMemberList {
 
-  static function init() {
-    add_shortcode( 'mailman-members', array( __CLASS__, 'get_all_members' ) );
+  function __construct() {
+    add_shortcode( 'mailman-members', array( $this, 'get_all_members' ) );
     if( is_admin() ) new MailmanMemberListSettingsPage();
+    $this->options = get_option( 'mml_options' );
   }
 
   // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
-  static function get_all_members() {
-    $lists = self::get_lists();
+  function get_all_members() {
+    $lists = $this->get_lists();
     $html = array();
 
     $html[] = '<div id="mailman-lists">';
@@ -52,7 +51,7 @@ class MailmanMemberList {
     <ul>
 HTML;
 
-      $members = self::get_members($list[0]);
+      $members = $this->get_members($list[0]);
 
       foreach($members as $member) {
 
@@ -81,23 +80,23 @@ HTML;
   }
 
   // Given string of form '   list-name - List description', returns array of form ['list-name', 'List Description']
-  static function parse_list_name_description($str) {
+  function parse_list_name_description($str) {
     preg_match('/^\\s+([^\\s]+)\\s+-\\s+(.+?)\\s*$/', $str, $matches);
     return array_slice($matches, 1);
   }
 
   // Returns an array of form [['list1-name', 'List 1 description'], ['list2-name', 'List 2 description']]
-  private static function get_lists() {
-    exec(MAILMAN_BIN_PATH . '/list_lists', $lists);
+  private function get_lists() {
+    exec($this->options['bin_path'] . '/list_lists', $lists);
 
     // First line is intro text.
     $lists = array_slice($lists, 1);
 
-    return array_map(array(__CLASS__, 'parse_list_name_description'), $lists);
+    return array_map(array($this, 'parse_list_name_description'), $lists);
   }
 
   // Returns an array of form ['email1@example.com', 'Jane Doe'], or ['email1@example.com'] if no name present.
-  private static function parse_member_name_email($str) {
+  private function parse_member_name_email($str) {
     if (preg_match('/^(.+?)\s+<(.+)>$/', $str, $matches) === 1)
       return array($matches[2], $matches[1]);
     else
@@ -106,11 +105,11 @@ HTML;
 
   // Returns an array of form [['email1@example.com', 'Jane Doe'], ['email2@example.com', 'John Doe'], ['email2@example.com']]
   // Note that second element of sub array, person name, may not be present.
-  private static function get_members($list_name) {
-    exec(MAILMAN_BIN_PATH . "/list_members -f $list_name", $members);
-    return array_map(array(__CLASS__, 'parse_member_name_email'), $members);
+  private function get_members($list_name) {
+    exec($this->options['bin_path'] . "/list_members -f $list_name", $members);
+    return array_map(array($this, 'parse_member_name_email'), $members);
   }
 }
 
-MailmanMemberList::init();
+$mml = new MailmanMemberList();
 ?>
