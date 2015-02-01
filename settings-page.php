@@ -78,6 +78,14 @@ class MailmanMemberListSettingsPage
       'mml-setting-admin', // Page
       'mml_main_settings_section' // Section
     );
+
+    add_settings_field(
+      'ignore_lists', // ID
+      'Lists to Ignore<br/>(e.g. mailman,admins)', // Title
+      array( $this, 'ignore_lists_callback' ), // Callback
+      'mml-setting-admin', // Page
+      'mml_main_settings_section' // Section
+    );
   }
 
   /**
@@ -105,6 +113,14 @@ class MailmanMemberListSettingsPage
     printf(
       '<input type="text" id="bin_path" name="mml_options[bin_path]" value="%s" style="width: 500px"/>',
       isset( $this->options['bin_path'] ) ? esc_attr( $this->options['bin_path']) : ''
+    );
+  }
+
+  public function ignore_lists_callback()
+  {
+    printf(
+      '<input type="text" id="ignore_lists" name="mml_options[ignore_lists]" value="%s" style="width: 400px"/>',
+      isset( $this->options['ignore_lists'] ) ? esc_attr( $this->options['ignore_lists']) : ''
     );
   }
 }
