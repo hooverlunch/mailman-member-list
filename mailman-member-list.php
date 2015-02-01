@@ -52,7 +52,9 @@ class MailmanMemberList {
   <div class="mailman-list">
     <div class="list-name">{$list[0]}</div>
     <div class="list-description">{$list[1]}</div>
-    <ul>
+    <a href="#" class="show-link">Show Members</a>
+    <a href="#" class="hide-link" style="display: none">Hide Members</a>
+    <ul style="display: none">
 HTML;
 
       $members = $this->get_members($list[0]);
@@ -79,7 +81,24 @@ HTML;
       $html[] = '</ul></div>';
     }
 
-    $html[] = '</div>';
+    $html[] = '';
+    $html[] = <<<HTML
+  </div>
+
+  <script type="text/javascript">
+    function mml_toggle(e) {
+      e.preventDefault();
+      var show = jQuery(e.target).hasClass('show-link');
+      var parent = jQuery(e.target).closest('.mailman-list');
+      parent.find('ul, .hide-link')[show ? 'show' : 'hide']();
+      parent.find('.show-link')[show ? 'hide' : 'show']();
+    }
+    jQuery(document).ready(function(){
+      jQuery('.mailman-list a').on('click', mml_toggle);
+    });
+  </script>
+HTML;
+
     echo implode("\n", $html);
   }
 
