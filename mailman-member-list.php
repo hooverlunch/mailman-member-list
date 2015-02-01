@@ -65,16 +65,17 @@ HTML;
 
         if (count($member) == 1) {
           $html[] = <<<HTML
-      <div class="member-name no-name"></div>
+      <span class="member-name no-name"></span><a class="member-email" href="mailto:{$member[0]}">{$member[0]}</a>
 HTML;
         } else {
           $html[] = <<<HTML
-      <div class="member-name">{$member[1]}</div>
+      <span class="member-name">{$member[1]}</span>
+      &lt;<a class="member-email" href="mailto:{$member[0]}">{$member[0]}</a>&gt;
 HTML;
         }
 
         $html[] = <<<HTML
-      <div class="member-email">{$member[0]}</div>
+
     </li>
 HTML;
       }
