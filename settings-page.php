@@ -72,9 +72,9 @@ class MailmanMemberListSettingsPage
     );
 
     add_settings_field(
-      'bin_path', // ID
-      'Mailman Binary Path<br/>(e.g. /usr/local/mailman/bin)', // Title
-      array( $this, 'bin_path_callback' ), // Callback
+      'mailman_path', // ID
+      'Mailman Path<br/>(e.g. /usr/local/mailman)', // Title
+      array( $this, 'mailman_path_callback' ), // Callback
       'mml-setting-admin', // Page
       'mml_main_settings_section' // Section
     );
@@ -108,11 +108,11 @@ class MailmanMemberListSettingsPage
   /**
    * Get the settings option array and print one of its values
    */
-  public function bin_path_callback()
+  public function mailman_path_callback()
   {
     printf(
-      '<input type="text" id="bin_path" name="mml_options[bin_path]" value="%s" style="width: 500px"/>',
-      isset( $this->options['bin_path'] ) ? esc_attr( $this->options['bin_path']) : ''
+      '<input type="text" id="mailman_path" name="mml_options[mailman_path]" value="%s" style="width: 500px"/>',
+      isset( $this->options['mailman_path'] ) ? esc_attr( $this->options['mailman_path']) : ''
     );
   }
 

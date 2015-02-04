@@ -33,6 +33,7 @@ class MailmanMemberList {
     add_shortcode( 'mailman-members', array( $this, 'get_all_members' ) );
     if( is_admin() ) new MailmanMemberListSettingsPage();
     $this->options = get_option( 'mml_options' );
+    $this->options['bin_path'] = $this->options['mailman_path'] . '/bin';
   }
 
   // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
