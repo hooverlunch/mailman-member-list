@@ -39,7 +39,7 @@ class MailmanMemberList {
   // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
   function get_all_members() {
     $lists = $this->get_lists();
-    $ignore = explode(',', $this->options['ignore_lists']);
+    $ignore = array_map('strtolower', explode(',', $this->options['ignore_lists']));
     $host = $this->get_host();
 
     $html = array();
@@ -50,12 +50,14 @@ class MailmanMemberList {
     }
 
     foreach($lists as $list) {
-      // Skip ignored lists.
-      if (in_array($list[0], $ignore)) continue;
+      $name_lc = strtolower($list[0]);
+
+      // Skip ignored lists (compare as lowercase).
+      if (in_array($name_lc, $ignore)) continue;
 
       $html[] = <<<HTML
   <div class="mailman-list">
-    <div class="list-name">{$list[0]}@{$host}</div>
+    <div class="list-name">{$name_lc}@{$host}</div>
     <div class="list-description">{$list[1]}</div>
     <a href="#" class="show-link">Show Members</a>
     <a href="#" class="hide-link" style="display: none">Hide Members</a>
