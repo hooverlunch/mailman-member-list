@@ -39,11 +39,15 @@ class MailmanMemberList {
   // Prints an HTML string consisting of list names, descriptions, and members for all lists on the system.
   function get_all_members() {
     $lists = $this->get_lists();
-    $html = array();
+    $ignore = explode(',', $this->options['ignore_lists']);
+    $host = $this->get_host();
 
+    $html = array();
     $html[] = '<div id="mailman-lists">';
 
-    $ignore = explode(',', $this->options['ignore_lists']);
+    if ($host == NULL) {
+      $html[] = '<em>ERROR: Could not find hostname in mailman config file.</em>';
+    }
 
     foreach($lists as $list) {
       // Skip ignored lists.
@@ -51,7 +55,7 @@ class MailmanMemberList {
 
       $html[] = <<<HTML
   <div class="mailman-list">
-    <div class="list-name">{$list[0]}</div>
+    <div class="list-name">{$list[0]}@{$host}</div>
     <div class="list-description">{$list[1]}</div>
     <a href="#" class="show-link">Show Members</a>
     <a href="#" class="hide-link" style="display: none">Hide Members</a>
@@ -133,6 +137,20 @@ HTML;
   private function get_members($list_name) {
     exec($this->options['bin_path'] . "/list_members -f $list_name", $members);
     return array_map(array($this, 'parse_member_name_email'), $members);
+  }
+
+  // Gets DEFAULT_EMAIL_HOST setting from mm_cfg.py or Defaults.py, or NULL if not found.
+  private function get_host() {
+    $files = array('mm_cfg.py', 'Defaults.py');
+    $dir = $this->options['mailman_path'] . '/Mailman';
+    $regexp = '/DEFAULT_EMAIL_HOST\s*=\s*[\'"](.+)[\'"]/';
+    foreach ($files as $file) {
+      $path = "$dir/$file";
+      if (file_exists($path) && preg_match($regexp, file_get_contents($path), $m)) {
+        return $m[1];
+      }
+    }
+    return NULL;
   }
 }
 
