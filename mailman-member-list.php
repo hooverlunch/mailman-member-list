@@ -57,7 +57,7 @@ class MailmanMemberList {
 
       $html[] = <<<HTML
   <div class="mailman-list">
-    <div class="list-name">{$name_lc}@{$host}</div>
+    <div class="list-name"><a href="mailto:{$name_lc}@{$host}">{$name_lc}@{$host}</a></div>
     <div class="list-description">{$list[1]}</div>
     <a href="#" class="show-link">Show Members</a>
     <a href="#" class="hide-link" style="display: none">Hide Members</a>
