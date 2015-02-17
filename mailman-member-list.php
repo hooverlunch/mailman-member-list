@@ -110,20 +110,18 @@ HTML;
     echo implode("\n", $html);
   }
 
-  // Given string of form '   list-name - List description', returns array of form ['list-name', 'List Description']
-  function parse_list_name_description($str) {
-    preg_match('/^\\s+([^\\s]+)\\s+-\\s+(.+?)\\s*$/', $str, $matches);
-    return array_slice($matches, 1);
+  // Given a list name, looks up list description and returns array of form ['list-name', 'List Description']
+  function add_list_description($name) {
+    exec($this->options['bin_path'] . "/config_list -o - $name | grep \"^description =\"", $out);
+
+    return array($name, substr($out[0], 15, -1));
   }
 
   // Returns an array of form [['list1-name', 'List 1 description'], ['list2-name', 'List 2 description']]
   private function get_lists() {
-    exec($this->options['bin_path'] . '/list_lists', $lists);
+    exec($this->options['bin_path'] . '/list_lists -b', $lists);
 
-    // First line is intro text.
-    $lists = array_slice($lists, 1);
-
-    return array_map(array($this, 'parse_list_name_description'), $lists);
+    return array_map(array($this, 'add_list_description'), $lists);
   }
 
   // Returns an array of form ['email1@example.com', 'Jane Doe'], or ['email1@example.com'] if no name present.
