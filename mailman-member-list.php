@@ -67,6 +67,8 @@ HTML;
       $members = $this->get_members($list[0]);
 
       foreach($members as $member) {
+        // Remove escaping that mailmain adds for some reason
+        $name = preg_replace('/("|\\\\)/', '', $member[1]);
 
         $html[] = '<li>';
 
@@ -76,7 +78,7 @@ HTML;
 HTML;
         } else {
           $html[] = <<<HTML
-      <span class="member-name">{$member[1]}</span>
+      <span class="member-name">{$name}</span>
       &lt;<a class="member-email" href="mailto:{$member[0]}">{$member[0]}</a>&gt;
 HTML;
         }
