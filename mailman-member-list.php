@@ -105,11 +105,12 @@ HTML;
     }
     jQuery(document).ready(function(){
       jQuery('.mailman-list a').on('click', mml_toggle);
+      jQuery('.mailman-list-loading').hide();
     });
   </script>
 HTML;
 
-    echo implode("\n", $html);
+    return implode("\n", $html);
   }
 
   // Given a list name, looks up list description and returns array of form ['list-name', 'List Description']
